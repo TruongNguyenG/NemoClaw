@@ -4,7 +4,7 @@
 import { createHash } from "node:crypto";
 import { readFileSync, readdirSync, statSync } from "node:fs";
 import { join } from "node:path";
-import { BlueprintManifest } from "./resolve.js";
+import type { BlueprintManifest } from "./resolve.js";
 
 export interface VerificationResult {
   valid: boolean;

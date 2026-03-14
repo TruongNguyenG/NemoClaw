@@ -3,7 +3,7 @@
 
 import { existsSync, mkdirSync, cpSync, readdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { CommandContext, PluginAPI } from "../index.js";
+import type { CommandContext, PluginAPI } from "../index.js";
 import { resolveBlueprint } from "../blueprint/resolve.js";
 import { verifyBlueprintDigest } from "../blueprint/verify.js";
 import { execBlueprint } from "../blueprint/exec.js";
@@ -62,7 +62,7 @@ export function detectHostOpenClaw(): HostOpenClawState {
 export async function migrate(ctx: CommandContext): Promise<void> {
   const { api, config, flags } = ctx;
   const dryRun = flags["dry-run"] as boolean;
-  const profile = (flags["profile"] as string) ?? "default";
+  const profile = flags["profile"] as string;
   const skipBackup = flags["skip-backup"] as boolean;
 
   api.log("info", "OpenShell Plugin migrate: moving host OpenClaw into OpenShell sandbox");
@@ -77,7 +77,7 @@ export async function migrate(ctx: CommandContext): Promise<void> {
     return;
   }
 
-  api.log("info", `Found OpenClaw config at ${hostState.configDir}`);
+  api.log("info", `Found OpenClaw config at ${hostState.configDir ?? "~/.openclaw"}`);
   if (hostState.configFile) api.log("info", `  Config: ${hostState.configFile}`);
   if (hostState.workspaceDir) api.log("info", `  Workspace: ${hostState.workspaceDir}`);
   if (hostState.extensionsDir) api.log("info", `  Extensions: ${hostState.extensionsDir}`);

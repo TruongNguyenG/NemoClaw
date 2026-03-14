@@ -4,7 +4,7 @@
 import { spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import { PluginAPI } from "../index.js";
+import type { PluginAPI } from "../index.js";
 
 export type BlueprintAction = "plan" | "apply" | "status" | "rollback";
 

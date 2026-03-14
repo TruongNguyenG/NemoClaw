@@ -3,7 +3,7 @@
 
 import { existsSync, cpSync, renameSync, mkdirSync } from "node:fs";
 import { join } from "node:path";
-import { CommandContext } from "../index.js";
+import type { CommandContext } from "../index.js";
 import { execBlueprint } from "../blueprint/exec.js";
 import { loadState, clearState } from "../blueprint/state.js";
 
@@ -26,7 +26,11 @@ export async function eject(ctx: CommandContext): Promise<void> {
     return;
   }
 
-  const snapshotPath = state.migrationSnapshot ?? state.hostBackupPath!;
+  const snapshotPath = state.migrationSnapshot ?? state.hostBackupPath;
+  if (!snapshotPath) {
+    api.log("error", "No snapshot or backup path found in state. Cannot restore.");
+    return;
+  }
   const snapshotOpenClawDir = join(snapshotPath, "openclaw");
 
   if (!existsSync(snapshotOpenClawDir)) {
@@ -76,7 +80,7 @@ export async function eject(ctx: CommandContext): Promise<void> {
   try {
     // Archive current sandbox-managed config
     if (existsSync(currentConfigDir)) {
-      const archiveName = `${currentConfigDir}.openshell-plugin-archived-${Date.now()}`;
+      const archiveName = `${currentConfigDir}.openshell-plugin-archived-${String(Date.now())}`;
       renameSync(currentConfigDir, archiveName);
       api.log("info", `Archived current config to ${archiveName}`);
     }

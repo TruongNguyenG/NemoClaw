@@ -1,8 +1,11 @@
 // SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { execSync } from "node:child_process";
-import { CommandContext } from "../index.js";
+import { exec } from "node:child_process";
+import { promisify } from "node:util";
+
+const execAsync = promisify(exec);
+import type { CommandContext } from "../index.js";
 import { loadState } from "../blueprint/state.js";
 
 export async function status(ctx: CommandContext): Promise<void> {
@@ -87,13 +90,12 @@ interface SandboxStatusResponse {
   uptime?: string;
 }
 
-function getSandboxStatus(sandboxName: string): SandboxStatus {
+async function getSandboxStatus(sandboxName: string): Promise<SandboxStatus> {
   try {
-    const output = execSync(`openshell sandbox status ${sandboxName} --json`, {
-      encoding: "utf-8",
+    const { stdout } = await execAsync(`openshell sandbox status ${sandboxName} --json`, {
       timeout: 5000,
     });
-    const parsed = JSON.parse(output) as SandboxStatusResponse;
+    const parsed = JSON.parse(stdout) as SandboxStatusResponse;
     return {
       name: sandboxName,
       running: parsed.state === "running",
@@ -117,13 +119,12 @@ interface InferenceStatusResponse {
   endpoint?: string;
 }
 
-function getInferenceStatus(): InferenceStatus {
+async function getInferenceStatus(): Promise<InferenceStatus> {
   try {
-    const output = execSync("openshell inference get --json", {
-      encoding: "utf-8",
+    const { stdout } = await execAsync("openshell inference get --json", {
       timeout: 5000,
     });
-    const parsed = JSON.parse(output) as InferenceStatusResponse;
+    const parsed = JSON.parse(stdout) as InferenceStatusResponse;
     return {
       configured: true,
       provider: parsed.provider ?? null,

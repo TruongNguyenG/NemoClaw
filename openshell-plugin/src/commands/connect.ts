@@ -2,12 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { spawn } from "node:child_process";
-import { CommandContext } from "../index.js";
-import { loadState } from "../blueprint/state.js";
+import type { CommandContext } from "../index.js";
 
 export async function connect(ctx: CommandContext): Promise<void> {
   const { api, flags } = ctx;
-  const sandboxName = (flags["sandbox"] as string) ?? loadState().sandboxName ?? "openclaw";
+  const sandboxName = flags["sandbox"] as string;
 
   api.log("info", `Connecting to OpenClaw sandbox: ${sandboxName}`);
   api.log("info", "You will be inside the sandbox. Run 'openclaw' commands normally.");

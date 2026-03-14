@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { spawn } from "node:child_process";
-import { CommandContext } from "../index.js";
+import type { CommandContext } from "../index.js";
 import { loadState } from "../blueprint/state.js";
 
 export async function logs(ctx: CommandContext): Promise<void> {
@@ -57,8 +57,12 @@ export async function logs(ctx: CommandContext): Promise<void> {
       });
 
       await new Promise<void>((resolve) => {
-        proc.on("close", () => resolve());
-        proc.on("error", () => resolve());
+        proc.on("close", () => {
+          resolve();
+        });
+        proc.on("error", () => {
+          resolve();
+        });
       });
     } catch {
       api.log("warn", `Could not read ${source.name} logs`);

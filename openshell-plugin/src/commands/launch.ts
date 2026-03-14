@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import { execSync } from "node:child_process";
-import { CommandContext } from "../index.js";
+import type { CommandContext } from "../index.js";
 import { resolveBlueprint } from "../blueprint/resolve.js";
 import { verifyBlueprintDigest, checkCompatibility } from "../blueprint/verify.js";
 import { execBlueprint } from "../blueprint/exec.js";
@@ -12,7 +12,7 @@ import { detectHostOpenClaw } from "./migrate.js";
 export async function launch(ctx: CommandContext): Promise<void> {
   const { api, config, flags } = ctx;
   const force = flags["force"] as boolean;
-  const profile = (flags["profile"] as string) ?? "default";
+  const profile = flags["profile"] as string;
 
   api.log("info", "OpenShell Plugin launch: setting up OpenClaw inside OpenShell");
 
