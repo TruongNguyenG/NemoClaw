@@ -1,0 +1,37 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Manual trigger for sandbox operations E2E test on fork.
+# Usage: Go to Actions tab → "Test Sandbox Operations" → Run workflow
+#
+# The test script installs NemoClaw from source if not already present,
+# onboards its own sandboxes, runs all tests, and tears down everything.
+
+name: Test Sandbox Operations
+
+on:
+  workflow_dispatch:
+
+jobs:
+  sandbox-operations-e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Run sandbox operations E2E test
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          NEMOCLAW_NON_INTERACTIVE: "1"
+          NEMOCLAW_ACCEPT_THIRD_PARTY_SOFTWARE: "1"
+          NEMOCLAW_POLICY_TIER: "open"
+        run: bash test/e2e/test-sandbox-operations.sh
+
+      - name: Upload test log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sandbox-operations-test-log
+          path: test-sandbox-operations-*.log
+          if-no-files-found: ignore
