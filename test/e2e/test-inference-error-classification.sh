@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # =============================================================================
-# test-onboard-error-classification.sh
+# test-inference-error-classification.sh
 # NemoClaw Inference Error Classification E2E Tests
 #
 # Validates that onboard produces classified, human-readable error messages
@@ -57,7 +57,7 @@ FAIL=0
 SKIP=0
 TOTAL=0
 
-LOG_FILE="test-onboard-error-classification-$(date +%Y%m%d-%H%M%S).log"
+LOG_FILE="test-inference-error-classification-$(date +%Y%m%d-%H%M%S).log"
 
 log() { echo -e "${CYAN}[$(date +%H:%M:%S)]${NC} $*" | tee -a "$LOG_FILE"; }
 pass() {
@@ -99,12 +99,11 @@ install_nemoclaw() {
   # Use a dummy key so install.sh doesn't prompt — the key will fail
   # validation, but install.sh only needs it for the onboard step which
   # we control separately in each test case.
-  local install_exit=0
   NVIDIA_API_KEY="nvapi-DUMMY-FOR-INSTALL" \
     NEMOCLAW_NON_INTERACTIVE=1 \
     NEMOCLAW_ACCEPT_THIRD_PARTY_SOFTWARE=1 \
     bash "$REPO_ROOT/install.sh" --non-interactive --yes-i-accept-third-party-software \
-    2>&1 | tee -a "$LOG_FILE" || install_exit=$?
+    2>&1 | tee -a "$LOG_FILE" || true
 
   # Source shell profile to pick up PATH changes
   if [ -f "$HOME/.bashrc" ]; then

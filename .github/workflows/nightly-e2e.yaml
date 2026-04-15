@@ -340,14 +340,14 @@ jobs:
           NEMOCLAW_NON_INTERACTIVE: "1"
           NEMOCLAW_ACCEPT_THIRD_PARTY_SOFTWARE: "1"
           NEMOCLAW_POLICY_TIER: "open"
-        run: bash test/e2e/test-onboard-error-classification.sh
+        run: bash test/e2e/test-inference-error-classification.sh
 
       - name: Upload test log on failure
         if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: inference-error-classification-test-log
-          path: test-onboard-error-classification-*.log
+          path: test-inference-error-classification-*.log
           if-no-files-found: ignore
 
   # ── Snapshot commands E2E ────────────────────────────────────
