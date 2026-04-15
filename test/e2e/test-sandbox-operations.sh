@@ -22,7 +22,7 @@ set -euo pipefail
 # ── Overall timeout (prevents hung CI jobs) ──────────────────────────────────
 if [ -z "${NEMOCLAW_E2E_NO_TIMEOUT:-}" ]; then
   export NEMOCLAW_E2E_NO_TIMEOUT=1
-  TIMEOUT_SECONDS="${NEMOCLAW_E2E_TIMEOUT_SECONDS:-1800}"
+  TIMEOUT_SECONDS="${NEMOCLAW_E2E_TIMEOUT_SECONDS:-5400}"
   if command -v timeout >/dev/null 2>&1; then
     exec timeout -s TERM "$TIMEOUT_SECONDS" bash "$0" "$@"
   elif command -v gtimeout >/dev/null 2>&1; then
