@@ -202,12 +202,14 @@ test_inf_05_credential_isolation() {
   log "  Onboarding sandbox '$SANDBOX_NAME' for credential test..."
   rm -f "$HOME/.nemoclaw/onboard.lock" 2>/dev/null || true
   local onboard_exit=0
+  local escaped_key
+  escaped_key=$(printf '%s\n' "$real_key" | sed 's/[&/\]/\\&/g')
   NEMOCLAW_SANDBOX_NAME="$SANDBOX_NAME" \
     NEMOCLAW_NON_INTERACTIVE=1 \
     NEMOCLAW_ACCEPT_THIRD_PARTY_SOFTWARE=1 \
     NEMOCLAW_POLICY_TIER="open" \
     nemoclaw onboard --non-interactive --yes-i-accept-third-party-software \
-    2>&1 | sed "s/${real_key}/REDACTED/g" | tee -a "$LOG_FILE" || onboard_exit=$?
+    2>&1 | sed "s/${escaped_key}/REDACTED/g" | tee -a "$LOG_FILE" || onboard_exit=$?
   if [[ $onboard_exit -ne 0 ]]; then
     fail "TC-INF-05: Setup" "Onboard failed (exit $onboard_exit)"
     return
