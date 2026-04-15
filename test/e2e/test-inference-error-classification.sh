@@ -59,17 +59,21 @@ TOTAL=0
 
 LOG_FILE="test-inference-error-classification-$(date +%Y%m%d-%H%M%S).log"
 
+# Log a timestamped message to stdout and the log file.
 log() { echo -e "${CYAN}[$(date +%H:%M:%S)]${NC} $*" | tee -a "$LOG_FILE"; }
+# Record a passing test assertion.
 pass() {
   ((PASS += 1))
   ((TOTAL += 1))
   echo -e "${GREEN}  PASS${NC} $1" | tee -a "$LOG_FILE"
 }
+# Record a failing test assertion with a reason.
 fail() {
   ((FAIL += 1))
   ((TOTAL += 1))
   echo -e "${RED}  FAIL${NC} $1 — $2" | tee -a "$LOG_FILE"
 }
+# Record a skipped test with a reason.
 skip() {
   ((SKIP += 1))
   ((TOTAL += 1))
@@ -152,6 +156,7 @@ preflight() {
 # ── Sandbox helpers ───────────────────────────────────────────────────────────
 SANDBOX_NAME="e2e-inf-cred"
 
+# Execute a command inside the sandbox via nemoclaw connect.
 sandbox_exec() {
   local cmd="$1"
   local ssh_cfg
