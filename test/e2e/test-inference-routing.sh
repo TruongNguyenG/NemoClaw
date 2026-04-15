@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # =============================================================================
-# test-inference-error-classification.sh
+# test-inference-routing.sh
 # NemoClaw Inference Error Classification E2E Tests
 #
 # Validates that onboard produces classified, human-readable error messages
@@ -57,7 +57,7 @@ FAIL=0
 SKIP=0
 TOTAL=0
 
-LOG_FILE="test-inference-error-classification-$(date +%Y%m%d-%H%M%S).log"
+LOG_FILE="test-inference-routing-$(date +%Y%m%d-%H%M%S).log"
 
 # Log a timestamped message to stdout and the log file.
 log() { echo -e "${CYAN}[$(date +%H:%M:%S)]${NC} $*" | tee -a "$LOG_FILE"; }

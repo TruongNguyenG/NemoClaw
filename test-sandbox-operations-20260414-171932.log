@@ -1,0 +1,242 @@
+[0;36m[17:19:32][0m === Pre-flight checks ===
+[0;36m[17:19:33][0m nemoclaw: nemoclaw v0.0.4-193-g553e583
+[0;36m[17:19:33][0m timeout: gtimeout
+[0;36m[17:19:34][0m Docker is running
+[0;36m[17:19:34][0m Pre-flight complete
+[0;36m[17:19:34][0m === Setup: Onboarding sandbox 'test-sbx-a' ===
+[0;36m[17:19:34][0m This may take a few minutes...
+[0;36m[17:19:34][0m   Onboarding sandbox 'test-sbx-a'...
+
+  NemoClaw Onboarding
+  (non-interactive mode)
+  ===================
+
+  [1/8] Preflight checks
+  ──────────────────────────────────────────────────
+  ✓ Docker is running
+  ✓ Container runtime: colima
+  ✓ openshell CLI: openshell 0.0.26
+  ✓ Port 8080 available (OpenShell gateway)
+  ✓ Port 18789 available (NemoClaw dashboard)
+  ✓ Apple GPU detected: Apple M4 (10 cores), 24576 MB unified memory
+  ⓘ NIM requires NVIDIA GPU — will use cloud inference
+
+  [2/8] Starting OpenShell gateway
+  ──────────────────────────────────────────────────
+  Using pinned OpenShell gateway image: ghcr.io/nvidia/openshell/cluster:0.0.26
+  Starting gateway cluster...
+  Still starting gateway cluster... (5s elapsed)
+  Still starting gateway cluster... (10s elapsed)
+  Still starting gateway cluster... (20s elapsed)
+  Still starting gateway cluster... (30s elapsed)
+  Still starting gateway cluster... (40s elapsed)
+  Still starting gateway cluster... (50s elapsed)
+  Still starting gateway cluster... (60s elapsed)
+  Still starting gateway cluster... (74s elapsed)
+  Still starting gateway cluster... (84s elapsed)
+  Still starting gateway cluster... (94s elapsed)
+  Still starting gateway cluster... (104s elapsed)
+  Still starting gateway cluster... (114s elapsed)
+  Starting OpenShell gateway pod...
+  Still starting OpenShell gateway pod... (124s elapsed)
+  Still starting OpenShell gateway pod... (134s elapsed)
+  Waiting for gateway health...
+  Waiting for gateway health...
+  ✓ Gateway is healthy
+  Patching CoreDNS DNS forwarding...
+Patching CoreDNS to forward to 10.18.67.91...
+CoreDNS patched. Waiting for rollout...
+Done. DNS should resolve in ~10 seconds.
+[1m[32m✓[39m[0m Active gateway set to 'nemoclaw'
+
+  [3/8] Configuring inference (NIM)
+  ──────────────────────────────────────────────────
+  [non-interactive] Provider: build
+  Chat Completions API available — OpenClaw will use openai-completions.
+  Using NVIDIA Endpoints with model: nvidia/nemotron-3-super-120b-a12b
+
+  [4/8] Setting up inference provider
+  ──────────────────────────────────────────────────
+[1m[32m✓[39m[0m Active gateway set to 'nemoclaw'
+[1m[32m✓[39m[0m Created provider nvidia-prod
+[1m[36mGateway inference configured:[39m[0m
+
+  [2mRoute:[0m inference.local
+  [2mProvider:[0m nvidia-prod
+  [2mModel:[0m nvidia/nemotron-3-super-120b-a12b
+  [2mVersion:[0m 1
+  [2mTimeout:[0m 60s (default)
+  ✓ Inference route set: nvidia-prod / nvidia/nemotron-3-super-120b-a12b
+
+  [5/8] Messaging channels
+  ──────────────────────────────────────────────────
+  [non-interactive] No messaging tokens configured. Skipping.
+
+  [6/8] Creating sandbox
+  ──────────────────────────────────────────────────
+  [non-interactive] Sandbox name (lowercase, starts with letter, hyphens ok) [my-assistant]: → test-sbx-a
+  Creating sandbox 'test-sbx-a' (this takes a few minutes on first run)...
+  Building sandbox image...
+  Building image openshell/sandbox-from:1776162128 from /private/var/folders/jw/76tjld0d1bsf1...
+  Step 1/45 : ARG BASE_IMAGE=ghcr.io/nvidia/nemoclaw/sandbox-base:latest
+  Step 2/45 : FROM node:22-slim@sha256:4f77a690f2f8946ab16fe1e791a3ac0667ae1c3575c3e4d0d4589e...
+  Step 3/45 : ENV NPM_CONFIG_AUDIT=false     NPM_CONFIG_FUND=false     NPM_CONFIG_UPDATE_NOTI...
+  Step 4/45 : COPY nemoclaw/package.json nemoclaw/package-lock.json nemoclaw/tsconfig.json /o...
+  Step 5/45 : COPY nemoclaw/src/ /opt/nemoclaw/src/
+  Step 6/45 : WORKDIR /opt/nemoclaw
+  Step 7/45 : RUN npm ci && npm run build
+  Step 8/45 : FROM ${BASE_IMAGE}
+  Step 9/45 : RUN (apt-get remove --purge -y gcc gcc-12 g++ g++-12 cpp cpp-12 make         ne...
+  Step 10/45 : COPY --from=builder /opt/nemoclaw/dist/ /opt/nemoclaw/dist/
+  Step 11/45 : COPY nemoclaw/openclaw.plugin.json /opt/nemoclaw/
+  Step 12/45 : COPY nemoclaw/package.json nemoclaw/package-lock.json /opt/nemoclaw/
+  Step 13/45 : COPY nemoclaw-blueprint/ /opt/nemoclaw-blueprint/
+  Step 14/45 : WORKDIR /opt/nemoclaw
+  Step 15/45 : RUN npm ci --omit=dev
+  Step 16/45 : RUN mkdir -p /sandbox/.nemoclaw/blueprints/0.1.0     && cp -r /opt/nemoclaw-bl...
+  Step 17/45 : COPY scripts/nemoclaw-start.sh /usr/local/bin/nemoclaw-start
+  Step 18/45 : RUN chmod 755 /usr/local/bin/nemoclaw-start
+  Step 19/45 : ARG NEMOCLAW_MODEL=nvidia/nemotron-3-super-120b-a12b
+  Step 20/45 : ARG NEMOCLAW_PROVIDER_KEY=inference
+  Step 21/45 : ARG NEMOCLAW_PRIMARY_MODEL_REF=inference/nvidia/nemotron-3-super-120b-a12b
+  Step 22/45 : ARG CHAT_UI_URL=http://127.0.0.1:18789
+  Step 23/45 : ARG NEMOCLAW_INFERENCE_BASE_URL=https://inference.local/v1
+  Step 24/45 : ARG NEMOCLAW_INFERENCE_API=openai-completions
+  Step 25/45 : ARG NEMOCLAW_INFERENCE_COMPAT_B64=e30=
+  Step 26/45 : ARG NEMOCLAW_WEB_CONFIG_B64=e30=
+  Step 27/45 : ARG NEMOCLAW_MESSAGING_CHANNELS_B64=W10=
+  Step 28/45 : ARG NEMOCLAW_MESSAGING_ALLOWED_IDS_B64=e30=
+  Step 29/45 : ARG NEMOCLAW_DISCORD_GUILDS_B64=e30=
+  Step 30/45 : ARG NEMOCLAW_DISABLE_DEVICE_AUTH=1
+  Step 31/45 : ARG NEMOCLAW_BUILD_ID=1776162128828
+  Step 32/45 : ARG NEMOCLAW_PROXY_HOST=10.200.0.1
+  Step 33/45 : ARG NEMOCLAW_PROXY_PORT=3128
+  Step 34/45 : ENV NEMOCLAW_MODEL=${NEMOCLAW_MODEL}     NEMOCLAW_PROVIDER_KEY=${NEMOCLAW_PROV...
+  Step 35/45 : WORKDIR /sandbox
+  Step 36/45 : USER sandbox
+  Step 37/45 : RUN python3 -c "import base64, json, os, secrets; from urllib.parse import url...
+  Step 38/45 : RUN openclaw doctor --fix > /dev/null 2>&1 || true     && openclaw plugins ins...
+  Step 39/45 : USER root
+  Step 40/45 : RUN mkdir -p /sandbox/.openclaw-data/logs         /sandbox/.openclaw-data/cred...
+  Step 41/45 : RUN chown root:root /sandbox/.openclaw     && rm -rf /root/.npm /sandbox/.npm ...
+  Step 42/45 : RUN sha256sum /sandbox/.openclaw/openclaw.json > /sandbox/.openclaw/.config-ha...
+  Step 43/45 : RUN chown root:root /sandbox/.nemoclaw     && chmod 1755 /sandbox/.nemoclaw   ...
+  Step 44/45 : ENTRYPOINT ["/usr/local/bin/nemoclaw-start"]
+  Step 45/45 : CMD ["/bin/bash"]
+  Built image openshell/sandbox-from:1776162128
+  Uploading image into OpenShell gateway...
+  Pushing image openshell/sandbox-from:1776162128 into gateway "nemoclaw"
+  [progress] Exported 100 MiB
+  [progress] Exported 200 MiB
+  [progress] Exported 300 MiB
+  [progress] Exported 400 MiB
+  [progress] Exported 500 MiB
+  [progress] Exported 600 MiB
+  [progress] Exported 700 MiB
+  [progress] Exported 800 MiB
+  [progress] Exported 900 MiB
+  [progress] Exported 1000 MiB
+  [progress] Exported 1100 MiB
+  [progress] Exported 1200 MiB
+  [progress] Exported 1300 MiB
+  [progress] Exported 1312 MiB
+  [progress] Uploaded to gateway
+  Still uploading image into OpenShell gateway... (65s elapsed)
+  Image openshell/sandbox-from:1776162128 is available in the gateway.
+  Waiting for sandbox to become ready...
+  Sandbox reported Ready before create stream exited; continuing.
+  Waiting for sandbox to become ready...
+  Waiting for NemoClaw dashboard to become ready...
+  Dashboard taking longer than expected to start. Continuing...
+[33m![39m No active forward found for port 18789
+  Setting up sandbox DNS proxy...
+Setting up DNS proxy in pod 'test-sbx-a' (10.200.0.1:53 -> 10.42.0.9)...
+Defaulted container "agent" out of: agent, workspace-init (init)
+Defaulted container "agent" out of: agent, workspace-init (init)
+Defaulted container "agent" out of: agent, workspace-init (init)
+Defaulted container "agent" out of: agent, workspace-init (init)
+  [PASS] DNS forwarder running (pid=609): dns-proxy: 10.200.0.1:53 -> 10.42.0.9:53 pid=609
+  [PASS] resolv.conf -> nameserver 10.200.0.1
+  [PASS] iptables: UDP 10.200.0.1:53 ACCEPT rule present
+  [PASS] getent hosts github.com -> 20.205.243.166  github.com
+  DNS verification: 4 passed, 0 failed
+  ✓ Sandbox 'test-sbx-a' created
+
+  [7/8] Setting up OpenClaw inside sandbox
+  ──────────────────────────────────────────────────
+  ✓ OpenClaw gateway launched inside sandbox
+
+  [8/8] Policy presets
+  ──────────────────────────────────────────────────
+  [non-interactive] Policy tier: balanced
+  [non-interactive] Applying policy presets: npm, pypi, huggingface, brew, brave
+  Widening sandbox egress — adding: registry.npmjs.org, registry.yarnpkg.com
+[1m[32m✓[39m[0m Policy version 3 submitted (hash: 440e75a56b48)
+[1m[32m✓[39m[0m Policy version 3 loaded (active version: 3)
+  Applied preset: npm
+  Widening sandbox egress — adding: pypi.org, files.pythonhosted.org
+[1m[32m✓[39m[0m Policy version 4 submitted (hash: c67782e7c6cc)
+[1m[32m✓[39m[0m Policy version 4 loaded (active version: 4)
+  Applied preset: pypi
+  Widening sandbox egress — adding: huggingface.co, cdn-lfs.huggingface.co, router.huggingface.co
+[1m[32m✓[39m[0m Policy version 5 submitted (hash: df341d36982f)
+[1m[32m✓[39m[0m Policy version 5 loaded (active version: 5)
+  Applied preset: huggingface
+  Widening sandbox egress — adding: formulae.brew.sh, github.com, ghcr.io, pkg-containers.githubusercontent.com, objects.githubusercontent.com, raw.githubusercontent.com
+[1m[32m✓[39m[0m Policy version 6 submitted (hash: ed24e4292932)
+[1m[32m✓[39m[0m Policy version 6 loaded (active version: 6)
+  Applied preset: brew
+  Widening sandbox egress — adding: api.search.brave.com
+[1m[32m✓[39m[0m Policy version 7 submitted (hash: 8ff12c63ad0a)
+[1m[32m✓[39m[0m Policy version 7 loaded (active version: 7)
+  Applied preset: brave
+
+  ──────────────────────────────────────────────────
+  Sandbox      test-sbx-a (Landlock + seccomp + netns)
+  Model        nvidia/nemotron-3-super-120b-a12b (NVIDIA Endpoints)
+  NIM          not running
+  ──────────────────────────────────────────────────
+  Run:         nemoclaw test-sbx-a connect
+  Status:      nemoclaw test-sbx-a status
+  Logs:        nemoclaw test-sbx-a logs --follow
+
+  OpenClaw UI (tokenized URL; treat it like a password)
+  Port 18789 must be forwarded before opening these URLs.
+  Dashboard: http://127.0.0.1:18789/#token=f2009da942d7269003a9aa09de963efe6e21f518446901bf62ec6e19d3326c11
+  ──────────────────────────────────────────────────
+
+[0;36m[17:24:48][0m Sandbox 'test-sbx-a' onboarded successfully
+[0;36m[17:24:48][0m === TC-SBX-01: List Sandboxes ===
+[0;32m  PASS[0m TC-SBX-01: nemoclaw list shows 'test-sbx-a'
+[0;36m[17:24:48][0m === TC-SBX-02: Connect & Chat ===
+[0;36m[17:24:48][0m   Sending one-shot message to agent via SSH...
+[0;32m  PASS[0m TC-SBX-02: Agent replied with expected token
+[0;36m[17:24:53][0m === TC-SBX-03: Status Fields ===
+[0;36m[17:24:53][0m   Found field: Sandbox
+[0;36m[17:24:53][0m   Found field: Model
+[0;36m[17:24:53][0m   Found field: Provider
+[0;36m[17:24:53][0m   Found field: GPU
+[0;32m  PASS[0m TC-SBX-03: Status output contains all expected fields
+[0;36m[17:24:53][0m === TC-SBX-04: Log Streaming ===
+[0;32m  PASS[0m TC-SBX-04: Log streaming produced output (200 lines)
+[0;32m  PASS[0m TC-SBX-04: Log --follow exited cleanly after kill
+[0;36m[17:24:57][0m === TC-SBX-07: Registry Rebuild ===
+[0;36m[17:24:57][0m   Backed up and deleted sandboxes.json
+[0;32m  PASS[0m TC-SBX-07: Registry rebuilt — 'test-sbx-a' found after deletion
+[0;36m[17:24:57][0m === TC-SBX-08: Process Recovery ===
+[0;36m[17:24:57][0m   Killing OpenClaw gateway process inside sandbox...
+[0;36m[17:24:57][0m   WARNING: Could not confirm process was killed (output: EXIT_2
+/bin/bash: line 1: pgrep: command not found
+/bin/bash: line 1: ps: command not found)
+[0;36m[17:25:02][0m   Running nemoclaw status (expect process recovery)...
+[0;32m  PASS[0m TC-SBX-08: Status detected and recovered dead OpenClaw process
+[0;36m[17:25:03][0m   Verifying SSH still works...
+[0;32m  PASS[0m TC-SBX-08: SSH works after process recovery
+[0;36m[17:25:03][0m === TC-SBX-06: Gateway Auto-Recovery (destructive) ===
+[0;36m[17:25:03][0m   Killing gateway container (simulates Docker crash)...
+[0;36m[17:25:08][0m   Gateway container state after kill: false
+[0;36m[17:25:08][0m   Running nemoclaw status (expect recovery attempt — may take several minutes)...
+[0;36m[20:47:55][0m 
+[0;36m[20:47:55][0m === Teardown ===
+[0;36m[20:47:55][0m Destroying sandbox 'test-sbx-a'...
+[0;36m[20:47:56][0m Teardown complete
