@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: Copyright (c) 2026 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+#
+# Manual trigger for sandbox operations E2E test on fork.
+# Usage: Go to Actions tab → "Test Sandbox Operations" → Run workflow
+#
+# Runs on a 4-core runner to test whether TC-SBX-06 (gateway auto-recovery
+# after docker kill) passes with more resources than ubuntu-latest (2-core).
+
+name: Test Sandbox Operations (4-core)
+
+on:
+  workflow_dispatch:
+    inputs:
+      runner:
+        description: "Runner label"
+        default: "ubuntu-latest-4-cores"
+        type: string
+
+jobs:
+  sandbox-operations-e2e:
+    runs-on: ${{ inputs.runner || 'ubuntu-latest-4-cores' }}
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Run sandbox operations E2E test
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          NEMOCLAW_NON_INTERACTIVE: "1"
+          NEMOCLAW_ACCEPT_THIRD_PARTY_SOFTWARE: "1"
+          NEMOCLAW_POLICY_TIER: "open"
+        run: bash test/e2e/test-sandbox-operations.sh
+
+      - name: Upload test log on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sandbox-operations-test-log
+          path: test-sandbox-operations-*.log
+          if-no-files-found: ignore
