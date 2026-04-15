@@ -238,7 +238,7 @@ test_inf_05_credential_isolation() {
   # Pass key via base64 to avoid shell escaping issues and command-line exposure
   log "  Scanning sandbox filesystem..."
   local key_b64
-  key_b64=$(echo -n "$real_key" | base64)
+  key_b64=$(printf '%s' "$real_key" | base64 | tr -d '\n')
   local fs_scan
   fs_scan=$(sandbox_exec "node -e \"
 const fs = require('fs');
@@ -306,7 +306,7 @@ test_inf_06_invalid_api_key() {
   pass "TC-INF-06: Onboard failed as expected (exit $exit_code)"
 
   # 2. Output should contain a classified error keyword
-  if echo "$output" | grep -qiE "authorization|credential|invalid|401|Unauthorized|api.key"; then
+  if echo "$output" | grep -qiE "authorization|credential|invalid|401|Unauthorized|api[._-]key"; then
     pass "TC-INF-06: Output contains classified error message"
   else
     fail "TC-INF-06: Error classification" "No classified error keyword found in output"
