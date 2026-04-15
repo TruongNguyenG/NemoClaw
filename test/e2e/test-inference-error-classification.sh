@@ -278,7 +278,7 @@ try {
   elif [[ "$placeholder" == "$real_key" ]]; then
     fail "TC-INF-05d: Placeholder" "Sandbox has the REAL key, not a placeholder"
   else
-    pass "TC-INF-05d: No NVIDIA_API_KEY in sandbox env (credential not exposed)"
+    skip "TC-INF-05d: Placeholder" "NVIDIA_API_KEY not set in sandbox (placeholder injection may not be active)"
   fi
 }
 
