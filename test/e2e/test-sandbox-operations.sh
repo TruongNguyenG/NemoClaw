@@ -678,8 +678,8 @@ main() {
   test_sbx_08_process_recovery
 
   # Phase 3: Destructive gateway kill (destroys + re-onboards sandbox A)
-  # TC-SBX-06 requires ≥4 vCPUs for k3s to restart after docker kill.
-  # ubuntu-latest (2 vCPU) times out; see https://github.com/NVIDIA/NemoClaw/issues/1909
+  # TC-SBX-06 requires ≥8 vCPUs for k3s to restart after docker kill.
+  # ubuntu-latest (4 vCPU) times out; see https://github.com/NVIDIA/NemoClaw/issues/1909
   local vcpus
   if command -v nproc >/dev/null 2>&1; then
     vcpus="$(nproc 2>/dev/null || echo 2)"
@@ -693,11 +693,11 @@ main() {
     vcpus=2
   fi
   [[ "$vcpus" =~ ^[0-9]+$ ]] || vcpus=2
-  if [[ $vcpus -ge 4 ]]; then
+  if [[ $vcpus -ge 8 ]]; then
     test_sbx_06_gateway_recovery
   else
     log "=== TC-SBX-06: Gateway Auto-Recovery (destructive) ==="
-    skip "TC-SBX-06: Gateway Auto-Recovery" "Runner has $vcpus vCPUs (need ≥4)"
+    skip "TC-SBX-06: Gateway Auto-Recovery" "Runner has $vcpus vCPUs (need ≥8)"
   fi
 
   # Phase 4: Multi-sandbox (onboards sandbox B)
